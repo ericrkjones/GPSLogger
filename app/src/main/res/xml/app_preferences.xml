@@ -169,6 +169,14 @@
             android:entryValues="@array/KMLAltitudeModeValues"
             android:defaultValue="1" />
 
+        <androidx.preference.ListPreference
+            android:key="prefKMLExtendedDataMode"
+            android:title="@string/pref_KML_extendeddata_mode"
+            android:summary=" "
+            android:entries="@array/KMLExtendedDataMode"
+            android:entryValues="@array/KMLExtendedDataModeValues"
+            android:defaultValue="0" />
+
     </androidx.preference.PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

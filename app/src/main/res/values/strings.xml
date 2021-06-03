@@ -197,7 +197,9 @@
     <string name="pref_AltitudeCorrection">Manual Correction</string>
     <string name="pref_AltitudeCorrection_summary_offset">Offset</string>
     <string name="pref_AltitudeCorrection_summary_not_defined">No offset defined</string>
-
+    <string name="pref_KML_extendeddata_mode">KML Details Mode</string>
+    <string name="pref_KML_extendeddata_mode_details">In details tag</string>
+    <string name="pref_KML_extendeddata_mode_extended_data">In extended data</string>
     <string name="pref_category_exporting">EXPORTATION</string>
     <string name="pref_export_TXT">Export Tracks in TXT</string>
     <string name="pref_export_TXT_summary">Plain text, comma-separated values</string>

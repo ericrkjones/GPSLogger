@@ -53,6 +53,7 @@ class Exporter extends Thread {
     private double altitudeManualCorrection = 0;
     private boolean egmAltitudeCorrection = false;
     private int getPrefKMLAltitudeMode = 0;
+    private int getPrefKMLExtendedDataMode = 0;
     private int getPrefGPXVersion = 0;
     private boolean txtFirstTrackpointFlag = true;
 
@@ -154,6 +155,7 @@ class Exporter extends Thread {
         this.altitudeManualCorrection = GPSApplication.getInstance().getPrefAltitudeCorrection();
         this.egmAltitudeCorrection = GPSApplication.getInstance().getPrefEGM96AltitudeCorrection();
         this.getPrefKMLAltitudeMode = GPSApplication.getInstance().getPrefKMLAltitudeMode();
+        this.getPrefKMLExtendedDataMode = GPSApplication.getInstance().getPrefKMLExtendedDataMode();
         this.getPrefGPXVersion = GPSApplication.getInstance().getPrefGPXVersion();
         this.exportTXT = exportTXT;
         this.exportGPX = exportGPX;
@@ -563,19 +565,56 @@ class Exporter extends Thread {
                     phdAltitudeGap = phdformatter.format(track.getEstimatedAltitudeGap(gpsApp.getPrefEGM96AltitudeCorrection()),PhysicalDataFormatter.FORMAT_ALTITUDE);
                     phdOverallDirection = phdformatter.format(track.getBearing(),PhysicalDataFormatter.FORMAT_BEARING);
 
-                    String TrackDesc = (track.getDescription().isEmpty() ? "" : "<b>" + stringToCDATA(track.getDescription()) + "</b><br><br>")
-                            + gpsApp.getApplicationContext().getString(R.string.distance) + " = " + phdDistance.value + " " + phdDistance.um +
-                            "<br>" + gpsApp.getApplicationContext().getString(R.string.duration) + " = " + phdDuration.value + " | " + phdDurationMoving.value +
-                            "<br>" + gpsApp.getApplicationContext().getString(R.string.altitude_gap) + " = " + phdAltitudeGap.value + " " + phdAltitudeGap.um +
-                            "<br>" + gpsApp.getApplicationContext().getString(R.string.max_speed) + " = " + phdSpeedMax.value + " " + phdSpeedMax.um +
-                            "<br>" + gpsApp.getApplicationContext().getString(R.string.average_speed) + " = " + phdSpeedAvg.value + " | " + phdSpeedAvgMoving.value + " " + phdSpeedAvg.um +
-                            "<br>" + gpsApp.getApplicationContext().getString(R.string.direction) + " = " + phdOverallDirection.value + " " + phdOverallDirection.um +
-                            "<br><br><i>" + track.getNumberOfLocations() + " " + gpsApp.getApplicationContext().getString(R.string.trackpoints) + "</i>" ;
+                    String TrackDesc = "";
+                    if (getPrefKMLExtendedDataMode == 0) {
+                        TrackDesc = (track.getDescription().isEmpty() ? "" : "<b>" + stringToCDATA(track.getDescription()) + "</b><br><br>")
+                                + gpsApp.getApplicationContext().getString(R.string.distance) + " = " + phdDistance.value + " " + phdDistance.um +
+                                "<br>" + gpsApp.getApplicationContext().getString(R.string.duration) + " = " + phdDuration.value + " | " + phdDurationMoving.value +
+                                "<br>" + gpsApp.getApplicationContext().getString(R.string.altitude_gap) + " = " + phdAltitudeGap.value + " " + phdAltitudeGap.um +
+                                "<br>" + gpsApp.getApplicationContext().getString(R.string.max_speed) + " = " + phdSpeedMax.value + " " + phdSpeedMax.um +
+                                "<br>" + gpsApp.getApplicationContext().getString(R.string.average_speed) + " = " + phdSpeedAvg.value + " | " + phdSpeedAvgMoving.value + " " + phdSpeedAvg.um +
+                                "<br>" + gpsApp.getApplicationContext().getString(R.string.direction) + " = " + phdOverallDirection.value + " " + phdOverallDirection.um +
+                                "<br><br><i>" + track.getNumberOfLocations() + " " + gpsApp.getApplicationContext().getString(R.string.trackpoints) + "</i>";
+                    } else {
+                        TrackDesc = stringToCDATA(track.getDescription());
+                    }
 
                     kmlBW.write("  <Placemark id=\"" + track.getName() + "\">" + newLine);
                     kmlBW.write("   <name>" + gpsApp.getApplicationContext().getString(R.string.tab_track) + " " + track.getName() + "</name>" + newLine);
                     kmlBW.write("   <description><![CDATA[" + TrackDesc + "]]></description>" + newLine);
                     kmlBW.write("   <styleUrl>#TrackStyle</styleUrl>" + newLine);
+                    if (getPrefKMLExtendedDataMode == 1) {
+                        // Write Extended Data
+                        kmlBW.write("   <ExtendedData>" + newLine);
+                        kmlBW.write("    <Data name=\"Distance (" + phdDistance.um + ")\">" + newLine);
+                        kmlBW.write("     <value>" + phdDistance.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Duration (total)\">" + newLine);
+                        kmlBW.write("     <value>" + phdDuration.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Duration (moving)\">" + newLine);
+                        kmlBW.write("     <value>" + phdDurationMoving.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Max Speed (" + phdSpeedMax.um + ")\">" + newLine);
+                        kmlBW.write("     <value>" + phdSpeedMax.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Avg Speed (" + phdSpeedAvg.um + ")\">" + newLine);
+                        kmlBW.write("     <value>" + phdSpeedAvg.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Avg Moving Speed (" + phdSpeedAvg.um + ")\">" + newLine);
+                        kmlBW.write("     <value>" + phdSpeedAvgMoving.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Direction\">" + newLine);
+                        kmlBW.write("     <value>" + phdOverallDirection.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Altitude Gap (" + phdAltitudeGap.um + ")\">" + newLine);
+                        kmlBW.write("     <value>" + phdAltitudeGap.value + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("    <Data name=\"Trackpoints\">" + newLine);
+                        kmlBW.write("     <value>" + track.getNumberOfLocations() + "</value>" + newLine);
+                        kmlBW.write("    </Data>" + newLine);
+                        kmlBW.write("   </ExtendedData>" + newLine);
+                    }
                     kmlBW.write("   <LineString>" + newLine);
                     kmlBW.write("    <extrude>0</extrude>" + newLine);
                     kmlBW.write("    <tessellate>0</tessellate>" + newLine);

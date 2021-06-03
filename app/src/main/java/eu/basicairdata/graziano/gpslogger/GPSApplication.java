@@ -153,6 +153,7 @@ public class GPSApplication extends Application implements LocationListener {
     private int     prefGPXVersion              = 100;           // The version of the GPX schema
     private boolean prefExportTXT;                               // If true the TXT file are exported on Share/Export
     private int     prefKMLAltitudeMode         = 0;             // The altitude mode for KML files: 1="clampToGround"; 0="absolute"
+    private int     prefKMLExtendedDataMode     = 0;             // Enable use of KML ExtendedData tag 0=use <details> tag; 1=use <ExtendedData>
     private int     prefShowTrackStatsType      = 0;             // What shown stats are based on: 0="Total time"; 1="Time in movement"
     private int     prefShowDirections          = 0;             // Visualization of headings: 0="NSWE"; 1="Degrees"
     private boolean prefGPSWeekRolloverCorrected;                // A flag for Week Rollover correction
@@ -544,6 +545,10 @@ public class GPSApplication extends Application implements LocationListener {
 
     public int getPrefKMLAltitudeMode() {
         return prefKMLAltitudeMode;
+    }
+
+    public int getPrefKMLExtendedDataMode() {
+        return prefKMLExtendedDataMode;
     }
 
     public int getPrefGPXVersion() {
@@ -1670,6 +1675,7 @@ public class GPSApplication extends Application implements LocationListener {
         prefExportGPX = preferences.getBoolean("prefExportGPX", true);
         prefExportTXT = preferences.getBoolean("prefExportTXT", false);
         prefKMLAltitudeMode = Integer.valueOf(preferences.getString("prefKMLAltitudeMode", "1"));
+        prefKMLExtendedDataMode = Integer.valueOf(preferences.getString("prefKMLExtendedDataMode", "0"));
         prefGPXVersion = Integer.valueOf(preferences.getString("prefGPXVersion", "100"));               // Default value = v.1.0
         prefShowTrackStatsType = Integer.valueOf(preferences.getString("prefShowTrackStatsType", "0"));
         prefShowDirections = Integer.valueOf(preferences.getString("prefShowDirections", "0"));
